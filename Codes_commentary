@@ -1,0 +1,242 @@
+public class GameManager : MonoBehaviour
+{
+    public GameObject targetTile;
+    int nbMatch;
+    int wrongMatch;
+    bool timerHasElapsed, timeHasStarted;
+    bool _levelHard = false;
+    float timer;
+    int cardShape;//distinction cardShape Id
+    private string rowForCard1, rowForCard2;
+    public GameObject card;
+    private bool firstCardSelected, secondCardSelected;
+    private GameObject card1, card2;
+    string CardShape;
+    public KeyCode code;
+    public AudioSource audioSource;
+    public AudioClip audioClip;
+    public AudioClip ClickAudioClip;
+    public AudioClip WrongAudioClip;
+    public TextMeshProUGUI levelText;
+    public GameObject MainCanvas;
+    
+
+    public int [] createShuffledArray()
+    {
+        int [] newArray = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int tmp;
+        for (int t = 0; t < 10; t++)
+        {
+            tmp = newArray[t];
+            int r = Random.Range(t, 10);
+            newArray[t] = newArray[r];
+            newArray[r] = tmp;
+        }
+        return newArray;
+        //배열을 통해 r에 0, 9까지의 랜덤값을 대입한다
+        //t에 r값을 대입하고 r값에 다시 tmp에 넣어둔 t값을 넣어줍니다
+        //이 짓을 10번 반복하고 newArray를 반환해줍니다
+    }
+    public int CardShapeClip()
+    {
+        cardShape = Random.Range(0, 2);
+        return cardShape;
+    }//Start함수에 넣어 시작할때 카드의 Id를 랜덤하게 고르고 대입해줍니다
+    //그리고 앞서 정수형으로 선언해둔 cardShape를 반환 해줍니다
+    //Random.Range(0,2)는 0부터 1까지의 값중 하나를 랜덤하게 골라줍니다
+    
+    public void cardShapeSelected()
+    {
+        if (cardShape == 0) { CardShape = "_of_spades"; }
+        else if (cardShape == 1) { CardShape = "_of_clubs"; }
+        
+        
+    }//CardShapeClip 함수에서 설정해준 Id값으로 카드의 모양을 판별합니다 
+
+
+    void addACard(int row, int rank,int value)
+    {
+        
+        float cardOriginalScale = card.transform.localScale.x;
+        float scaleFactor = (500 * cardOriginalScale) / 100.0f;
+        GameObject cen = GameObject.Find("centerOfScreen");
+
+        //Vector3 newPosition = new Vector3(cen.transform.position.x + ((rank - 10 / 2) * scaleFactor), cen.transform.position.y, cen.transform.position.z);
+        float yScaleFactor = (725 * cardOriginalScale) / 100.0f;
+        Vector3 newPosition = new Vector3(cen.transform.position.x + ((rank - 10 /2) * scaleFactor), cen.transform.position.y + ((row - 2 / 2) * yScaleFactor), cen.transform.position.z);
+        GameObject C = (GameObject)(Instantiate(card, newPosition, Quaternion.identity));
+        C.tag = "" + (value + 1);
+        C.name = "" + row + "_" + value;
+        
+        string nameOfCard = "";
+        string cardNumber = "";
+        if(value == 0)
+        {
+            cardNumber = "ace";
+        }
+        else
+        {
+            cardNumber = "" + (value + 1);
+        }
+        cardShapeSelected();
+        nameOfCard = cardNumber + CardShape;
+        Sprite s1 = (Sprite)(Resources.Load<Sprite>(nameOfCard));
+        GameObject.Find("" + row + "_" + value).GetComponent<Tile>().setOriginalSprite(s1);
+    }
+
+
+    
+    private void displayCards()
+    {
+        
+        int[] shuffledArray = createShuffledArray();
+        int[] shuffledArray2 = createShuffledArray();
+        for(int i= 0; i < 10; i++)
+        {
+            
+            addACard(0, i, shuffledArray[i]);
+            addACard(1, i, shuffledArray2[i]);
+
+        }
+
+    }//두 줄을 생성하여 값을 비교 할거기 때문에 Array를 두개 만들어 createShuffledArray()를 넣어줍니다
+     //그 다음 AddACard 함수를 사용하여 윗줄에 한개, 아랫줄에 한개를 각각 10번씩 생성해줍니다
+    
+    //start is called before the first frame update
+    void Start()
+    {
+        CardShapeClip();
+        displayCards();
+        targetTile.gameObject.SetActive(false);
+        Destroy(targetTile);
+        
+    }//시작할때 CardShapeClip 함수를 사용하여 Id값을 정합니다
+     //그 다음 displayCards 함수를 사용하여 카드를 20장 생성합니다
+     //prefab으로 넣어둔 gameObject를 유니티에서 선택한 후 역할을 꺼준 다음 제거합니다
+     
+    public void runTimer()
+    {
+        timerHasElapsed = false;
+        timeHasStarted = true;
+    }//불 형식으로 선언해둔 두 변수의 값을 초기화합니다
+    
+    public void checkCards()
+    {
+        runTimer();
+    }//runTimer 함수를 실행시킵니다
+    public void levelEster()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            _levelHard = true;
+
+        }//H키를 누를경우 hardMode가 실행될 수 있도록 불 값을 켜줍니다
+        else if(Input.GetKeyDown(KeyCode.T)) { SceneManager.LoadScene("HardBoildScene"); }
+        //이 코드도 마찬가지로 T키를 넣을 경우 HardBoildMode가 실행될 수 있도록 불 값을 켜줍니다
+    }
+    public void resetKey()
+    {
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene("NewScene");
+        }
+    }//R키를 누를 경우 다시 Scene을 불러와서 초기화시킵니다
+
+    // Update is called once per frame
+    void Update()
+    {
+        levelEster();
+        resetKey();
+        if (_levelHard == true) { SceneManager.LoadScene("HardScene"); }
+        if (timeHasStarted)
+        {
+            timer += Time.deltaTime;
+            print(timer);
+            if (timer > 0.7)
+            {
+                timerHasElapsed = true;
+                timeHasStarted = false;
+                
+                
+                    if (card1.tag == card2.tag)
+                    {
+                        Destroy(card1);
+                        Destroy(card2);
+                        audioSource.gameObject.SetActive(true);
+                        audioSource.PlayOneShot(audioClip);
+                        nbMatch++;
+                        if (nbMatch == 10)
+                        {
+                            WaitAndDoSomething();
+                            SceneManager.LoadScene("SuccScene");
+                        }
+                    }
+                    else
+                    {
+                        audioSource.PlayOneShot(WrongAudioClip);
+                        card1.GetComponent<Tile>().hideCard();
+                        card2.GetComponent<Tile>().hideCard();
+                    }
+                
+                
+                firstCardSelected = false;
+                secondCardSelected = false;
+                card1 = null;
+                card2 = null;
+                rowForCard1 = "";
+                rowForCard2 = "";
+                timer = 0;  
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
+
+    }
+
+
+    public void cardSelected(GameObject card)
+    {
+
+        if (!firstCardSelected)
+        {
+            string row = card.name.Substring(0, 1);
+            rowForCard1 = row;
+            firstCardSelected = true;
+            card1 = card;
+            card1.GetComponent<Tile>().revealCard();
+            audioSource.PlayOneShot(ClickAudioClip);
+        }
+        else if (firstCardSelected && !secondCardSelected)
+        {
+            string row = card.name.Substring(0, 1);
+            rowForCard2 = row;
+
+            if (rowForCard2 != rowForCard1)
+            {
+                audioSource.PlayOneShot(ClickAudioClip);
+                secondCardSelected = true;
+                card2 = card;
+                card2.GetComponent<Tile>().revealCard();
+                checkCards();
+            }
+        }
+    }
+    
+
+    public void OnClickCard()
+    {
+        audioSource.PlayOneShot(audioClip);
+    }
+
+    IEnumerator WaitAndDoSomething()
+    {
+        yield return new WaitForSeconds(2f); // 2초 대기
+
+        // 2초 후에 실행할 코드
+    }
+  
+
+}
