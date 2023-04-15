@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
         //배열을 통해 r에 0, 9까지의 랜덤값을 대입한다
         //t에 r값을 대입하고 r값에 다시 tmp에 넣어둔 t값을 넣어줍니다
         //이 짓을 10번 반복하고 newArray를 반환해줍니다
+        //이 부분을 이해하고 적용시키는게 좀 우여곡절이 많았습니다 주소값을 다르게 넣고 값을 넣는게
+        //좀 뭣같았습니다
     }
     public int CardShapeClip()
     {
@@ -58,7 +60,7 @@ public class GameManager : MonoBehaviour
     void addACard(int row, int rank,int value)
     {
         
-        float cardOriginalScale = card.transform.localScale.x;
+        float cardOriginalScale = card.transform.localScale.x;//스케일값을 대입해줍니다
         float scaleFactor = (500 * cardOriginalScale) / 100.0f;
         GameObject cen = GameObject.Find("centerOfScreen");
 
