@@ -51,8 +51,9 @@ public class GameManager : MonoBehaviour
         else if (cardShape == 1) { CardShape = "_of_clubs"; }
         
         
-    }//CardShapeClip 함수에서 설정해준 Id값으로 카드의 모양을 판별합니다 
-
+    }//CardShapeClip 함수에서 설정해준 Id값으로 카드의 모양을 판별합니다
+    //사실 처음엔 랜덤 값으로 Id를 설정하는걸 여기에 넣었는데 카드 모양이 다 각기 다르게 랜덤값으로 넣어져서
+    //고민을 좀 하다가 함수를 따로 선언해서 Start()에 넣는것으로 해결했습니다 이걸로 한 3일 날린듯
 
     void addACard(int row, int rank,int value)
     {
