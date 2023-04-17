@@ -61,13 +61,15 @@ public class GameManager : MonoBehaviour
     {
         
         float cardOriginalScale = card.transform.localScale.x;//스케일값을 대입해줍니다
-        float scaleFactor = (500 * cardOriginalScale) / 100.0f;
-        GameObject cen = GameObject.Find("centerOfScreen");
+        float scaleFactor = (500 * cardOriginalScale) / 100.0f;//카드 크기를 측정하고 100으로 나누어줍니다
+        //이때 500을 받은 이유는 카드의 x값이 500이었기 때문입니다
+        GameObject cen = GameObject.Find("centerOfScreen");//화면의 중심을 잡기 위해 centerOfScreen이라는 게임 오브젝트를 생성하고 받아줍니다
 
-        //Vector3 newPosition = new Vector3(cen.transform.position.x + ((rank - 10 / 2) * scaleFactor), cen.transform.position.y, cen.transform.position.z);
-        float yScaleFactor = (725 * cardOriginalScale) / 100.0f;
+        float yScaleFactor = (725 * cardOriginalScale) / 100.0f;//y값 역시 스케일을 측정해줍니다. 725를 곱한 이유는 역시 카드 y값이 725이기 때문입니다 
         Vector3 newPosition = new Vector3(cen.transform.position.x + ((rank - 10 /2) * scaleFactor), cen.transform.position.y + ((row - 2 / 2) * yScaleFactor), cen.transform.position.z);
+        //위치값을 만들고 입력받은 rank값에 10/2값을 빼줍니다. row값에 2/2를 빼줍니다. z값을 받아줍니다.
         GameObject C = (GameObject)(Instantiate(card, newPosition, Quaternion.identity));
+        //겜오 C에 
         C.tag = "" + (value + 1);
         C.name = "" + row + "_" + value;
         
